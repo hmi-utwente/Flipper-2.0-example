@@ -8,28 +8,24 @@
             "core" : {
                 "uIntent" : "",
                 "aIntent" : ""
-            }
+            },
             "output" : {
-                "speech" : "",
+                "speech" : ""
             }
         }
     </is>
 
     <javascript>
-        function getUserIntent(String text){
-            if(text === "hello"){
-                return "greeting";
-            }
-            else if(text == "bye"){
-                return "goodbye";
-            }
-            else{
-                return "unknown";
-            }
+        <![CDATA[
+
+        function helpPrint(text){
+            print(text);
+            return true;
         }
 
-        function getAgentIntent(String intent){
-            if(text === "greeting"){
+        function getUserIntent(text){
+            helpPrint("Userintent: " + text);
+            if(text == "hello"){
                 return "greeting";
             }
             else if(text == "goodbye"){
@@ -40,19 +36,32 @@
             }
         }
 
-        function setAgentSpeech(String intent){
-            if(text === "hello"){
+        function setAgentIntent(intent){
+            helpPrint("AgentIntent: " + intent);
+            if(intent == "greeting"){
+                return "greeting";
+            }
+            else if(intent == "goodbye"){
+                return "goodbye";
+            }
+            else{
+                return "unknown";
+            }
+        }
+
+        function setAgentSpeech(intent){
+            helpPrint("Agentspeech: " + intent);
+            if(intent == "greeting"){
                 return "Hello";
             }
-            else if(text == "bye"){
+            else if(intent == "goodbye"){
                 return "Bye";
             }
             else{
                 return "I don't know";
             }
         }
-
-
+    ]]>
     </javascript>
 
     <!-- Initialize the modules -->
@@ -63,12 +72,12 @@
         </preconditions>
         <initeffects>
             <method name="init" is="is.example.init.sphinx">
-                <object persistent="sphinx" class="hmi.flipper2.exampleProject.input">
+                <object persistent="sphinx" class="hmi.flipper2.exampleProject.input.Sphinx4">
                     <constructors/>
                 </object>
             </method>
             <method name="init" is="is.example.init.marytts">
-                <object persistent="marytts" class="hmi.flipper2.exampleProject.output">
+                <object persistent="marytts" class="hmi.flipper2.exampleProject.output.MaryTTS">
                     <constructors/>
                 </object>
             </method>
@@ -76,96 +85,65 @@
     </template>
 
     <!-- Check for speech -->
-    <template id="greetUser">
+    <template id="getUserSpeech">
         <preconditions>
-            <condition>is.dialog.agent.intent === "greetUser"</condition>
-            <condition>helpPrint("User: " + is.dialog.user)</condition>
+            <method name="hasMessage">
+                <object persistent="sphinx" class="hmi.flipper2.exampleProject.input.Sphinx4"/>
+            </method>
         </preconditions>
         <effects>
-            <assign is="is.dialog.agent.utterance">"Hello again, "+ is.dialog.user.name</assign>
-            <assign is="is.dialog.agent.ready">true</assign>
-            <assign is="is.dialog.agent.intent">""</assign>
-            <method name="setName">
-                <object persistent="ChatModule" class="nl.utwente.hmi.coffeebot.dialog.GUI"/>
-                <arguments>
-                    <value class="String" is="is.dialog.user.name"/>
-                </arguments>
+            <method name="getMessage" is="is.example.input.speech">
+                <object persistent="sphinx" class="hmi.flipper2.exampleProject.input.Sphinx4"/>
             </method>
         </effects>
     </template>
 
     <!-- Set user intent when speech -->
-    <template id="greetUser">
+    <template id="setUserIntent">
         <preconditions>
-            <condition>is.dialog.agent.intent === "greetUser"</condition>
-            <condition>helpPrint("User: " + is.dialog.user)</condition>
+            <condition>is.example.input.speech !== ""</condition>
         </preconditions>
         <effects>
-            <assign is="is.dialog.agent.utterance">"Hello again, "+ is.dialog.user.name</assign>
-            <assign is="is.dialog.agent.ready">true</assign>
-            <assign is="is.dialog.agent.intent">""</assign>
-            <method name="setName">
-                <object persistent="ChatModule" class="nl.utwente.hmi.coffeebot.dialog.GUI"/>
-                <arguments>
-                    <value class="String" is="is.dialog.user.name"/>
-                </arguments>
-            </method>
+            <assign is="is.example.core.uIntent">getUserIntent(is.example.input.speech)</assign>
+            <assign is="is.example.input.speech">""</assign>
         </effects>
     </template>
 
     <!-- Set agent intent based on user intent -->
-    <template id="greetUser">
+    <template id="setAgentIntent">
         <preconditions>
-            <condition>is.dialog.agent.intent === "greetUser"</condition>
-            <condition>helpPrint("User: " + is.dialog.user)</condition>
+            <condition>is.example.core.uIntent !== ""</condition>
         </preconditions>
         <effects>
-            <assign is="is.dialog.agent.utterance">"Hello again, "+ is.dialog.user.name</assign>
-            <assign is="is.dialog.agent.ready">true</assign>
-            <assign is="is.dialog.agent.intent">""</assign>
-            <method name="setName">
-                <object persistent="ChatModule" class="nl.utwente.hmi.coffeebot.dialog.GUI"/>
-                <arguments>
-                    <value class="String" is="is.dialog.user.name"/>
-                </arguments>
-            </method>
+            <assign is="is.example.core.aIntent">setAgentIntent(is.example.core.uIntent)</assign>
+            <assign is="is.example.core.uIntent">""</assign>
         </effects>
     </template>
 
     <!-- Set agent speech based on agent intent -->
-    <template id="greetUser">
+    <template id="setAgentSpeech">
         <preconditions>
-            <condition>is.dialog.agent.intent === "greetUser"</condition>
-            <condition>helpPrint("User: " + is.dialog.user)</condition>
+            <condition>is.example.core.aIntent !== ""</condition>
         </preconditions>
         <effects>
-            <assign is="is.dialog.agent.utterance">"Hello again, "+ is.dialog.user.name</assign>
-            <assign is="is.dialog.agent.ready">true</assign>
-            <assign is="is.dialog.agent.intent">""</assign>
-            <method name="setName">
-                <object persistent="ChatModule" class="nl.utwente.hmi.coffeebot.dialog.GUI"/>
-                <arguments>
-                    <value class="String" is="is.dialog.user.name"/>
-                </arguments>
-            </method>
+            <assign is="is.example.output.speech">setAgentSpeech(is.example.core.aIntent)</assign>
+            <assign is="is.example.core.aIntent">""</assign>
         </effects>
     </template>
 
-    <template id="greetUser">
+    <!-- Say agent speech -->
+    <template id="sayAgentSpeech">
         <preconditions>
-            <condition>is.dialog.agent.intent === "greetUser"</condition>
-            <condition>helpPrint("User: " + is.dialog.user)</condition>
+            <condition>is.example.output.speech !== ""</condition>
         </preconditions>
         <effects>
-            <assign is="is.dialog.agent.utterance">"Hello again, "+ is.dialog.user.name</assign>
-            <assign is="is.dialog.agent.ready">true</assign>
-            <assign is="is.dialog.agent.intent">""</assign>
-            <method name="setName">
-                <object persistent="ChatModule" class="nl.utwente.hmi.coffeebot.dialog.GUI"/>
+            <method name="speak">
+                <object persistent="marytts" class="hmi.flipper2.exampleProject.output.MaryTTS"/>
                 <arguments>
-                    <value class="String" is="is.dialog.user.name"/>
+                    <value class="String" is="is.example.output.speech"/>
                 </arguments>
             </method>
+            <assign is="is.example.output.speech">""</assign>
         </effects>
     </template>
 
