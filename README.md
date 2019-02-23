@@ -1,6 +1,6 @@
 # Flipper-2.0-example
 
-This example project demonstrates how Flipper can interact with other libraries with a simple bot. In this case it will use Sphinx4 and MaryTTS. This example-bot will respond to either of the three things said: 'hello', 'goodbye' or other text.
+This example project demonstrates how Flipper 2.0 (https://github.com/hmi-utwente/Flipper-2.0) can interact with other libraries with a simple bot. In this case it will use Sphinx4 and MaryTTS. This example-bot will respond to either of the three things said: 'hello', 'goodbye' or other text.
 
 To see how the interaction works, check out specifically the `example.xml` template file (../resources/flipper/templates/example.xml). `Sphinx4.java` and `MaryTTS.java` are helper classes to connect to the API of each of these libraries.
 
