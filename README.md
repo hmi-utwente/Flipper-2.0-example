@@ -9,7 +9,7 @@ To see how the interaction works, check out specifically the `example.xml` templ
 * Java 8
 
 ## Setting up
-After downloading or cloning this repository, you can run `mvn install` to install Flipper2.0. After that, run `mvn compile`.
+After downloading or cloning this repository, you can run `mvn initialize` to install Flipper2.0. After that, run `mvn compile`.
 
 ## Running
 You can run the example by running `mvn exec:java` in the root folder of the project.
